@@ -1,0 +1,6 @@
+{
+    "text.autoconfig.oinkscoreboard.option.scoreboardSize": "Scoreboard Size (Entries)",
+    "key.offsetUp": "Increase Scoreboard Offset",
+    "key.offsetDown": "Decrease Scoreboard Offset",
+    "category.keybinds": "OinkScoreboard"
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "oinkscoreboard",
+  "version": "${version}",
+  "name": "OinkScoreboard",
+  "description": "",
+  "authors": [
+    "Pigalala"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/oinkscoreboard/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.pigalala.oinkscoreboard.OinkScoreboard"
+    ],
+    "modmenu":[
+      "me.pigalala.oinkscoreboard.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "oinkscoreboard.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "fabric": "*",
+    "minecraft": ">=1.19"
+  }
+}
