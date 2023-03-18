@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static net.minecraft.client.gui.DrawableHelper.fill;
@@ -45,53 +44,43 @@ public abstract class InGameHudMixin {
     private void renderScoreboardSidebar(MatrixStack matrices, ScoreboardObjective objective, CallbackInfo ci) {
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<ScoreboardPlayerScore> playerRows = scoreboard.getAllPlayerScores(objective).stream().filter((score) -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#")).collect(Collectors.toList());
-        if (OinkScoreboard.config.scoreboardSize != -1 && playerRows.size() > OinkScoreboard.config.scoreboardSize) {
-            playerRows = Lists.newArrayList(Iterables.skip(playerRows, playerRows.size() - OinkScoreboard.config.scoreboardSize));
-        }
 
-        List<Pair<ScoreboardPlayerScore, Text>> rowNamePair = Lists.newArrayListWithCapacity((playerRows).size());
+        List<Pair<ScoreboardPlayerScore, Text>> rowNamePair = Lists.newArrayListWithCapacity(playerRows.size());
         Text text = objective.getDisplayName();
-        int textWidth = this.getTextRenderer().getWidth(text);
+        TextRenderer tr = this.getTextRenderer();
+        int textWidth = tr.getWidth(text);
         int textWidth2 = textWidth;
-        int colonSpaceWidth = this.getTextRenderer().getWidth(": ");
+        int colonSpaceWidth = getTextRenderer().getWidth(": ");
 
         ScoreboardPlayerScore scoreboardPlayerScore;
         MutableText text2;
-        for(Iterator<ScoreboardPlayerScore> var11 = playerRows.iterator(); var11.hasNext(); textWidth = Math.max(textWidth, this.getTextRenderer().getWidth(text2) + colonSpaceWidth + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())))) {
+        for(Iterator<ScoreboardPlayerScore> var11 = playerRows.iterator(); var11.hasNext(); textWidth = Math.max(textWidth, tr.getWidth(text2) + colonSpaceWidth + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())))) {
             scoreboardPlayerScore = var11.next();
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
             text2 = Team.decorateName(team, Text.literal(scoreboardPlayerScore.getPlayerName()));
             rowNamePair.add(Pair.of(scoreboardPlayerScore, text2));
         }
 
-        int var10000 = playerRows.size();
-        Objects.requireNonNull(this.getTextRenderer());
-        int l = var10000 * 9;
-        int m = this.scaledHeight / 2 + l / 2;
+        //int m = this.scaledHeight / 2 + (playerRows.size() * 9) / 2; // Normal placement
+        int m = this.scaledHeight; // Bottom placement
         int x = this.scaledWidth - textWidth - 3;
+        int xOffset = x - 2;
         int inc = 0;
-        int backgroundColorLight = this.client.options.getTextBackgroundColor(0.2F);
-        int backgroundColorDark = this.client.options.getTextBackgroundColor(0.75F);
+
+        //                colour = 0xAARRGGBB
+        int backgroundColorLight = 0x30F38AFF;
+        int backgroundColorDark = 0x52F952FF;
 
         for (Pair<ScoreboardPlayerScore, Text> pair : rowNamePair) {
             ++inc;
-            Text textRow = pair.getSecond();
-            Objects.requireNonNull(this.getTextRenderer());
             int currentY = m - inc * 9;
-            int u = this.scaledWidth /*- 3 + 2*/;
-            int var10001 = x - 2;
-            Objects.requireNonNull(this.getTextRenderer());
-            fill(matrices, var10001, currentY, u, currentY + 9, backgroundColorLight);
-            this.getTextRenderer().draw(matrices, textRow, (float) x, (float) currentY, -1);
+            fill(matrices, xOffset, currentY, this.scaledWidth, currentY + 9, backgroundColorLight);
+            tr.draw(matrices, pair.getSecond(), (float) x, (float) currentY, -1);
+
             if (inc == playerRows.size()) {
-                //var10001 = x - 2;
-                Objects.requireNonNull(this.getTextRenderer());
-                fill(matrices, var10001, currentY - 9 - 1, u, currentY - 1, backgroundColorDark);
-                fill(matrices, x - 2, currentY - 1, u, currentY, backgroundColorLight);
-                TextRenderer textRenderer = this.getTextRenderer();
-                float var10003 = (float) (x + textWidth / 2 - textWidth2 / 2);
-                Objects.requireNonNull(this.getTextRenderer());
-                textRenderer.draw(matrices, text, var10003, (float) (currentY - 9), -1);
+                fill(matrices, xOffset, currentY - 9 - 1, this.scaledWidth, currentY - 1, backgroundColorDark);
+                fill(matrices, xOffset, currentY - 1, this.scaledWidth, currentY, backgroundColorLight);
+                tr.draw(matrices, text, (float) (x + textWidth / 2 - textWidth2 / 2), (float) (currentY - 9), -1);
             }
         }
         ci.cancel();
