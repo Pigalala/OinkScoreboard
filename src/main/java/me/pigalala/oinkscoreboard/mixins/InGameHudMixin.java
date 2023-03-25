@@ -4,6 +4,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import me.pigalala.oinkscoreboard.OinkScoreboard;
+import me.pigalala.oinkscoreboard.ScoreboardPlacements;
+import me.pigalala.oinkscoreboard.config.OinkConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -36,6 +38,8 @@ public abstract class InGameHudMixin {
 
     @Shadow @Final private MinecraftClient client;
 
+    @Shadow public abstract void clear();
+
     @Inject(
             method = "renderScoreboardSidebar",
             at = @At(value = "HEAD"),
@@ -44,6 +48,8 @@ public abstract class InGameHudMixin {
     private void renderScoreboardSidebar(MatrixStack matrices, ScoreboardObjective objective, CallbackInfo ci) {
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<ScoreboardPlayerScore> playerRows = scoreboard.getAllPlayerScores(objective).stream().filter((score) -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#")).collect(Collectors.toList());
+
+        if(playerRows.size() > OinkConfig.maxRows) playerRows = Lists.newArrayList(Iterables.skip(playerRows, playerRows.size() - OinkConfig.maxRows));
 
         List<Pair<ScoreboardPlayerScore, Text>> rowNamePair = Lists.newArrayListWithCapacity(playerRows.size());
         Text text = objective.getDisplayName();
@@ -61,15 +67,16 @@ public abstract class InGameHudMixin {
             rowNamePair.add(Pair.of(scoreboardPlayerScore, text2));
         }
 
-        //int m = this.scaledHeight / 2 + (playerRows.size() * 9) / 2; // Normal placement
-        int m = this.scaledHeight; // Bottom placement
+        int m;
+        if(OinkConfig.scoreboardPlacement == ScoreboardPlacements.NORMAL) m = this.scaledHeight / 2 + (playerRows.size() * 9) / 2; // Normal placement
+        else m = this.scaledHeight; // Bottom placement
+
         int x = this.scaledWidth - textWidth - 3;
         int xOffset = x - 2;
         int inc = 0;
 
-        //                colour = 0xAARRGGBB
-        int backgroundColorLight = 0x30F38AFF;
-        int backgroundColorDark = 0x52F952FF;
+        int backgroundColorLight = OinkConfig.scoreboardColour;
+        int backgroundColorDark = OinkConfig.scoreboardColour + 0x20000000;
 
         for (Pair<ScoreboardPlayerScore, Text> pair : rowNamePair) {
             ++inc;

@@ -14,6 +14,9 @@
   "entrypoints": {
     "client": [
       "me.pigalala.oinkscoreboard.OinkScoreboard"
+    ],
+    "modmenu": [
+      "me.pigalala.oinkscoreboard.config.MMIntegration"
     ]
   },
   "mixins": [
