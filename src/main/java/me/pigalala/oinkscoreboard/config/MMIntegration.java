@@ -17,7 +17,7 @@ public class MMIntegration implements ModMenuApi {
 
             ConfigEntryBuilder entryBuilder = b.entryBuilder();
             b.getOrCreateCategory(Text.of("Cat"))
-                    .addEntry(entryBuilder.startIntSlider(Text.of("Max Rows"), OinkConfig.maxRows, 1, 100)
+                    .addEntry(entryBuilder.startIntSlider(Text.of("Max Rows"), OinkConfig.maxRows, 1, 99)
                             .setDefaultValue(50)
                             .setSaveConsumer(newVal -> OinkConfig.maxRows = newVal)
                             .build())
