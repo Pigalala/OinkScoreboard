@@ -36,6 +36,8 @@ public abstract class InGameHudMixin {
     @Shadow private int scaledHeight;
     @Shadow public abstract TextRenderer getTextRenderer();
 
+    @Shadow @Final private MinecraftClient client;
+
     @Inject(
             method = "renderScoreboardSidebar",
             at = @At(value = "HEAD"),
@@ -84,7 +86,7 @@ public abstract class InGameHudMixin {
                 fill(matrices, xOffset, currentY - 9 - 1, this.scaledWidth, currentY - 1, backgroundColorDark);
                 fill(matrices, xOffset, currentY - 1, this.scaledWidth, currentY, backgroundColorLight);
                 tr.draw(matrices, text, (float) (x + textWidth / 2 - textWidth2 / 2), (float) (currentY - 9), -1);
-                tr.draw(matrices, "§7§o(" + OinkConfig.maxRows + ")", xOffset + 2, currentY - 9, -1);
+                if(OinkConfig.showMaxRows) tr.draw(matrices, "§7§o(" + OinkConfig.maxRows + ")", xOffset + 2, currentY - 9, -1);
             }
         }
         ci.cancel();

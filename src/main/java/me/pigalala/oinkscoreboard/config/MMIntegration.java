@@ -16,16 +16,16 @@ public class MMIntegration implements ModMenuApi {
                     .setTitle(Text.of("OinkScoreboard"));
 
             ConfigEntryBuilder entryBuilder = b.entryBuilder();
-            b.getOrCreateCategory(Text.of("Cat"))
-                    .addEntry(entryBuilder.startIntSlider(Text.of("Max Rows"), OinkConfig.maxRows, 1, 99)
-                            .setDefaultValue(50)
-                            .setSaveConsumer(newVal -> OinkConfig.maxRows = newVal)
+            b.getOrCreateCategory(CATEGORY)
+                    .addEntry(entryBuilder.startBooleanToggle(SHOW_MAX_ROWS, OinkConfig.showMaxRows)
+                            .setDefaultValue(true)
+                            .setSaveConsumer(newVal -> OinkConfig.showMaxRows = newVal)
                             .build())
-                    .addEntry(entryBuilder.startAlphaColorField(Text.of("Scoreboard Colour"), OinkConfig.scoreboardColour)
+                    .addEntry(entryBuilder.startAlphaColorField(SCOREBOARD_COLOUR, OinkConfig.scoreboardColour)
                             .setDefaultValue(0x52FFFFFF)
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardColour = newVal)
                             .build())
-                    .addEntry(entryBuilder.startEnumSelector(Text.of("Scoreboard Placement"), ScoreboardPlacements.class, OinkConfig.scoreboardPlacement)
+                    .addEntry(entryBuilder.startEnumSelector(SCOREBOARD_PLACEMENT, ScoreboardPlacements.class, OinkConfig.scoreboardPlacement)
                             .setDefaultValue(ScoreboardPlacements.NORMAL)
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardPlacement = newVal)
                             .build());
@@ -34,4 +34,10 @@ public class MMIntegration implements ModMenuApi {
             return b.build();
         };
     }
+
+    private static final Text
+    CATEGORY = Text.of("Cat"),
+    SCOREBOARD_COLOUR = Text.of("Scoreboard Colour"),
+    SCOREBOARD_PLACEMENT = Text.of("Scoreboard Placement"),
+    SHOW_MAX_ROWS = Text.of("Show Max Row Text");
 }
