@@ -10,9 +10,9 @@ import java.io.FileWriter;
 
 public class OinkConfig {
 
-    public static int scoreboardColour = 0x52FFFFFF;
+    public static int scoreboardColour = 0x52000000;
     public static int maxRows = 50;
-    public static boolean showMaxRows = true;
+    public static boolean showMaxRows = false;
     public static ScoreboardPlacements scoreboardPlacement = ScoreboardPlacements.NORMAL;
 
     private static File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "oinkscoreboard.properties");

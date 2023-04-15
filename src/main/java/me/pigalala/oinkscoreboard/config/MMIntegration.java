@@ -18,12 +18,13 @@ public class MMIntegration implements ModMenuApi {
             ConfigEntryBuilder entryBuilder = b.entryBuilder();
             b.getOrCreateCategory(CATEGORY)
                     .addEntry(entryBuilder.startBooleanToggle(SHOW_MAX_ROWS, OinkConfig.showMaxRows)
-                            .setDefaultValue(true)
+                            .setDefaultValue(false)
                             .setSaveConsumer(newVal -> OinkConfig.showMaxRows = newVal)
                             .build())
                     .addEntry(entryBuilder.startAlphaColorField(SCOREBOARD_COLOUR, OinkConfig.scoreboardColour)
-                            .setDefaultValue(0x52FFFFFF)
+                            .setDefaultValue(0x52000000)
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardColour = newVal)
+                            .setTooltip(SCOREBOARD_COLOUR_TOOLTIP)
                             .build())
                     .addEntry(entryBuilder.startEnumSelector(SCOREBOARD_PLACEMENT, ScoreboardPlacements.class, OinkConfig.scoreboardPlacement)
                             .setDefaultValue(ScoreboardPlacements.NORMAL)
@@ -38,6 +39,7 @@ public class MMIntegration implements ModMenuApi {
     private static final Text
     CATEGORY = Text.of("Cat"),
     SCOREBOARD_COLOUR = Text.of("Scoreboard Colour"),
+    SCOREBOARD_COLOUR_TOOLTIP = Text.of("Set the colour of the scoreboard in the form #aarrggbb"),
     SCOREBOARD_PLACEMENT = Text.of("Scoreboard Placement"),
     SHOW_MAX_ROWS = Text.of("Show Max Row Text");
 }
