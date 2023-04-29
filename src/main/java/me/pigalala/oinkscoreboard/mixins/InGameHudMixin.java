@@ -47,8 +47,6 @@ public abstract class InGameHudMixin {
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<ScoreboardPlayerScore> playerRows = scoreboard.getAllPlayerScores(objective).stream().filter((score) -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#")).collect(Collectors.toList());
 
-        if(playerRows.size() > OinkConfig.maxRows) playerRows = Lists.newArrayList(Iterables.skip(playerRows, playerRows.size() - OinkConfig.maxRows));
-
         List<Pair<ScoreboardPlayerScore, Text>> rowNamePair = Lists.newArrayListWithCapacity(playerRows.size());
         Text text = objective.getDisplayName();
         TextRenderer tr = this.getTextRenderer();
@@ -74,7 +72,7 @@ public abstract class InGameHudMixin {
         int inc = 0;
 
         int backgroundColorLight = OinkConfig.scoreboardColour;
-        int backgroundColorDark = OinkConfig.scoreboardColour + 0x22000000;
+        int backgroundColorDark = OinkConfig.scoreboardColour + 0x1A000000; // 66 - 4c
 
         for (Pair<ScoreboardPlayerScore, Text> pair : rowNamePair) {
             ++inc;
@@ -86,7 +84,6 @@ public abstract class InGameHudMixin {
                 fill(matrices, xOffset, currentY - 9 - 1, this.scaledWidth, currentY - 1, backgroundColorDark);
                 fill(matrices, xOffset, currentY - 1, this.scaledWidth, currentY, backgroundColorLight);
                 tr.draw(matrices, text, (float) (x + textWidth / 2 - textWidth2 / 2), (float) (currentY - 9), -1);
-                if(OinkConfig.showMaxRows) tr.draw(matrices, "§7§o(" + OinkConfig.maxRows + ")", xOffset + 2, currentY - 9, -1);
             }
         }
         ci.cancel();

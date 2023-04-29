@@ -3,7 +3,7 @@
   "id": "oinkscoreboard",
   "version": "${version}",
   "name": "OinkScoreboard",
-  "description": "",
+  "description": "Customise your scoreboard to make it special to you. When playing on a server running TimingSystem, you will see all drivers in a race that you are spectating.",
   "authors": [
     "Pigalala"
   ],
