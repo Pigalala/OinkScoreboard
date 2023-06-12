@@ -3,7 +3,7 @@
   "id": "oinkscoreboard",
   "version": "${version}",
   "name": "OinkScoreboard",
-  "description": "Customise your scoreboard to make it special to you. When playing on a server running TimingSystem, you will see all drivers in a race that you are spectating.",
+  "description": "",
   "authors": [
     "Pigalala"
   ],
@@ -23,8 +23,8 @@
     "oinkscoreboard.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.10",
+    "fabricloader": ">=0.14.21",
     "fabric": "*",
-    "minecraft": ">=1.19"
+    "minecraft": ">=1.20"
   }
 }
