@@ -57,7 +57,8 @@ public abstract class InGameHudMixin {
 
         int m;
         if(OinkConfig.scoreboardPlacement == ScoreboardPlacements.NORMAL) m = this.scaledHeight / 2 + (playerRows.size() * 9) / 2; // Normal placement
-        else m = this.scaledHeight; // Bottom placement
+        else if(OinkConfig.scoreboardPlacement == ScoreboardPlacements.LOWER_RIGHT) m = this.scaledHeight; // Lower Right placement
+        else m = (playerRows.size() + 1) * 9; // Upper Right placement
 
         int x = this.scaledWidth - textWidth - 3;
         int xOffset = x - 2;
@@ -69,6 +70,7 @@ public abstract class InGameHudMixin {
         for (Pair<ScoreboardPlayerScore, Text> pair : rowNamePair) {
             ++inc;
             int currentY = m - inc * 9;
+
             context.fill(xOffset, currentY, this.scaledWidth, currentY + 9, backgroundColorLight);
             context.drawText(tr, pair.getSecond(), x, currentY, -1, false);
 
