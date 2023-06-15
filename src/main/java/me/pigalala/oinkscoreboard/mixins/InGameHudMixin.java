@@ -1,5 +1,6 @@
 package me.pigalala.oinkscoreboard.mixins;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import me.pigalala.oinkscoreboard.ScoreboardPlacements;
@@ -39,17 +40,19 @@ public abstract class InGameHudMixin {
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<ScoreboardPlayerScore> playerRows = scoreboard.getAllPlayerScores(objective).stream().filter((score) -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#")).collect(Collectors.toList());
 
+        if (playerRows.size() > OinkConfig.maxRows) playerRows = Lists.newArrayList(Iterables.skip(playerRows, playerRows.size() - OinkConfig.maxRows));
+
         List<Pair<ScoreboardPlayerScore, Text>> rowNamePair = Lists.newArrayListWithCapacity(playerRows.size());
-        Text text = objective.getDisplayName();
+        Text scoreboardTitle = objective.getDisplayName();
         TextRenderer tr = this.getTextRenderer();
-        int textWidth = tr.getWidth(text);
+        int textWidth = tr.getWidth(scoreboardTitle);
         int textWidth2 = textWidth;
-        int colonSpaceWidth = getTextRenderer().getWidth(": ");
+        int colonSpaceWidth = tr.getWidth(": ");
 
         ScoreboardPlayerScore scoreboardPlayerScore;
         MutableText text2;
-        for(Iterator<ScoreboardPlayerScore> var11 = playerRows.iterator(); var11.hasNext(); textWidth = Math.max(textWidth, tr.getWidth(text2) + colonSpaceWidth + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())))) {
-            scoreboardPlayerScore = var11.next();
+        for(Iterator<ScoreboardPlayerScore> scoreboardRows = playerRows.iterator(); scoreboardRows.hasNext(); textWidth = Math.max(textWidth, tr.getWidth(text2) + colonSpaceWidth + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())))) {
+            scoreboardPlayerScore = scoreboardRows.next();
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
             text2 = Team.decorateName(team, Text.literal(scoreboardPlayerScore.getPlayerName()));
             rowNamePair.add(Pair.of(scoreboardPlayerScore, text2));
@@ -62,11 +65,11 @@ public abstract class InGameHudMixin {
 
         int x = this.scaledWidth - textWidth - 3;
         int xOffset = x - 2;
-        int inc = 0;
 
         int backgroundColorLight = OinkConfig.scoreboardColour;
-        int backgroundColorDark = OinkConfig.scoreboardColour + 0x1A000000; // 66 - 4c
+        int backgroundColorDark = OinkConfig.scoreboardColour + 0x1A000000;
 
+        int inc = 0;
         for (Pair<ScoreboardPlayerScore, Text> pair : rowNamePair) {
             ++inc;
             int currentY = m - inc * 9;
@@ -77,7 +80,7 @@ public abstract class InGameHudMixin {
             if (inc == playerRows.size()) {
                 context.fill(xOffset, currentY - 9 - 1, this.scaledWidth, currentY - 1, backgroundColorDark);
                 context.fill(xOffset, currentY - 1, this.scaledWidth, currentY, backgroundColorLight);
-                context.drawText(tr, text, (x + textWidth / 2 - textWidth2 / 2), currentY - 9, -1, false);
+                context.drawText(tr, scoreboardTitle, (x + textWidth / 2 - textWidth2 / 2), currentY - 9, -1, false);
             }
         }
         ci.cancel();

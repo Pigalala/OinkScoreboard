@@ -22,9 +22,15 @@ public class MMIntegration implements ModMenuApi {
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardColour = newVal)
                             .setTooltip(SCOREBOARD_COLOUR_TOOLTIP)
                             .build())
+                    .addEntry(entryBuilder.startIntSlider(MAX_ROWS, OinkConfig.maxRows, 1, 100)
+                            .setDefaultValue(30)
+                            .setSaveConsumer(newVal -> OinkConfig.maxRows = newVal)
+                            .setTooltip(MAX_ROWS_TOOLTIP)
+                            .build())
                     .addEntry(entryBuilder.startEnumSelector(SCOREBOARD_PLACEMENT, ScoreboardPlacements.class, OinkConfig.scoreboardPlacement)
                             .setDefaultValue(ScoreboardPlacements.NORMAL)
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardPlacement = newVal)
+                            .setTooltip(SCOREBOARD_PLACEMENT_TOOPTIP)
                             .build());
 
             b.setSavingRunnable(OinkConfig::save);
@@ -33,8 +39,14 @@ public class MMIntegration implements ModMenuApi {
     }
 
     private static final Text
-    CATEGORY = Text.of("Cat"),
+    CATEGORY = Text.of("OinkScoreboard"),
+    //
     SCOREBOARD_COLOUR = Text.of("Scoreboard Colour"),
-    SCOREBOARD_COLOUR_TOOLTIP = Text.of("Set the hex colour of the scoreboard in the form #AARRGGBB"),
-    SCOREBOARD_PLACEMENT = Text.of("Scoreboard Placement");
+    SCOREBOARD_COLOUR_TOOLTIP = Text.of("Set the hex colour of the scoreboard using ARGB"),
+    //
+    SCOREBOARD_PLACEMENT = Text.of("Scoreboard Placement"),
+    SCOREBOARD_PLACEMENT_TOOPTIP = Text.of("Set the position of the scoreboard"),
+    //
+    MAX_ROWS = Text.of("Max Rows"),
+    MAX_ROWS_TOOLTIP = Text.of("Set the maximum amount of rows shown on the scoreboard");
 }
