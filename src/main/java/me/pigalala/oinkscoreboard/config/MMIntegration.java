@@ -2,7 +2,6 @@ package me.pigalala.oinkscoreboard.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import me.pigalala.oinkscoreboard.ScoreboardPlacements;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.text.Text;
@@ -22,15 +21,22 @@ public class MMIntegration implements ModMenuApi {
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardColour = newVal)
                             .setTooltip(SCOREBOARD_COLOUR_TOOLTIP)
                             .build())
-                    .addEntry(entryBuilder.startIntSlider(MAX_ROWS, OinkConfig.maxRows, 1, 100)
+                    .addEntry(entryBuilder.startIntSlider(MAX_ROWS, OinkConfig.maxRows, 0, 200)
                             .setDefaultValue(30)
                             .setSaveConsumer(newVal -> OinkConfig.maxRows = newVal)
                             .setTooltip(MAX_ROWS_TOOLTIP)
                             .build())
-                    .addEntry(entryBuilder.startEnumSelector(SCOREBOARD_PLACEMENT, ScoreboardPlacements.class, OinkConfig.scoreboardPlacement)
+                    .addEntry(entryBuilder.startEnumSelector(ScoreboardPlacements.getTitle(), ScoreboardPlacements.class, OinkConfig.scoreboardPlacement)
                             .setDefaultValue(ScoreboardPlacements.NORMAL)
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardPlacement = newVal)
-                            .setTooltip(SCOREBOARD_PLACEMENT_TOOPTIP)
+                            .setEnumNameProvider(val -> Text.of(ScoreboardPlacements.of(val.ordinal()).getDisplayName()))
+                            .setTooltip(ScoreboardPlacements.getToolTip())
+                            .build())
+                    .addEntry(entryBuilder.startEnumSelector(ScoreboardMode.getTitle(), ScoreboardMode.class, OinkConfig.scoreboardMode)
+                            .setDefaultValue(ScoreboardMode.DEFAULT)
+                            .setSaveConsumer(newVal -> OinkConfig.scoreboardMode = newVal)
+                            .setEnumNameProvider(val -> Text.of(ScoreboardMode.of(val.ordinal()).getDisplayName()))
+                            .setTooltip(ScoreboardMode.getToolTip())
                             .build());
 
             b.setSavingRunnable(OinkConfig::save);
@@ -44,9 +50,6 @@ public class MMIntegration implements ModMenuApi {
     SCOREBOARD_COLOUR = Text.of("Scoreboard Colour"),
     SCOREBOARD_COLOUR_TOOLTIP = Text.of("Set the hex colour of the scoreboard using ARGB"),
     //
-    SCOREBOARD_PLACEMENT = Text.of("Scoreboard Placement"),
-    SCOREBOARD_PLACEMENT_TOOPTIP = Text.of("Set the position of the scoreboard"),
-    //
     MAX_ROWS = Text.of("Max Rows"),
-    MAX_ROWS_TOOLTIP = Text.of("Set the maximum amount of rows shown on the scoreboard");
+    MAX_ROWS_TOOLTIP = Text.of("Set the maximum amount of rows shown on the scoreboard || This value divided by 2 is used by RANGE mode");
 }
