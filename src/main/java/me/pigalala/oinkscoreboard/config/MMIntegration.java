@@ -31,12 +31,6 @@ public class MMIntegration implements ModMenuApi {
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardPlacement = newVal)
                             .setEnumNameProvider(val -> Text.of(ScoreboardPlacements.of(val.ordinal()).getDisplayName()))
                             .setTooltip(ScoreboardPlacements.getToolTip())
-                            .build())
-                    .addEntry(entryBuilder.startEnumSelector(ScoreboardMode.getTitle(), ScoreboardMode.class, OinkConfig.scoreboardMode)
-                            .setDefaultValue(ScoreboardMode.DEFAULT)
-                            .setSaveConsumer(newVal -> OinkConfig.scoreboardMode = newVal)
-                            .setEnumNameProvider(val -> Text.of(ScoreboardMode.of(val.ordinal()).getDisplayName()))
-                            .setTooltip(ScoreboardMode.getToolTip())
                             .build());
 
             b.setSavingRunnable(OinkConfig::save);
@@ -48,8 +42,8 @@ public class MMIntegration implements ModMenuApi {
     CATEGORY = Text.of("OinkScoreboard"),
     //
     SCOREBOARD_COLOUR = Text.of("Scoreboard Colour"),
-    SCOREBOARD_COLOUR_TOOLTIP = Text.of("Set the hex colour of the scoreboard using ARGB"),
+    SCOREBOARD_COLOUR_TOOLTIP = Text.of("Set the hex colour of the scoreboard using AARRGGBB"),
     //
     MAX_ROWS = Text.of("Max Rows"),
-    MAX_ROWS_TOOLTIP = Text.of("Set the maximum amount of rows shown on the scoreboard || This value divided by 2 is used by RANGE mode");
+    MAX_ROWS_TOOLTIP = Text.of("Set the maximum amount of rows shown on the scoreboard");
 }

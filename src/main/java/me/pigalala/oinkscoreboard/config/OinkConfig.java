@@ -12,7 +12,6 @@ public class OinkConfig {
     public static int maxRows = 30;
     public static int scoreboardColour = 0x4c000000;
     public static ScoreboardPlacements scoreboardPlacement = ScoreboardPlacements.NORMAL;
-    public static ScoreboardMode scoreboardMode = ScoreboardMode.DEFAULT;
 
     private static File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "oinkscoreboard.properties");
 
@@ -28,8 +27,6 @@ public class OinkConfig {
                         scoreboardColour = Integer.parseInt(line.substring(8));
                     else if(line.startsWith("placement "))
                         scoreboardPlacement = ScoreboardPlacements.valueOf(line.substring(10));
-                    else if(line.startsWith("mode "))
-                        scoreboardMode = ScoreboardMode.valueOf(line.substring(5));
                     line = br.readLine();
                 } while (line != null);
                 br.close();
@@ -45,7 +42,6 @@ public class OinkConfig {
             writer.write("maxrows " + maxRows + "\n");
             writer.write("scolour " + scoreboardColour + "\n");
             writer.write("placement " + scoreboardPlacement.toString() + "\n");
-            writer.write("mode " + scoreboardMode.toString() + "\n");
             writer.close();
         }
         catch (Exception e) {
