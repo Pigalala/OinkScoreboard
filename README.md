@@ -1,1 +1,2 @@
 # OinkScoreboard
+OinkScoreboard is a Minecraft mod which allows you to customise the scoreboard slighty. It is intended to be used with the [TimingSystem](https://github.com/Makkuusen/TimingSystem) plugin.
