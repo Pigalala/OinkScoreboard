@@ -58,7 +58,7 @@ public abstract class InGameHudMixin {
 
         ScoreboardPlayerScore scoreboardPlayerScore;
         MutableText text2;
-        for(Iterator<ScoreboardPlayerScore> scoreboardRows = playerRows.iterator(); scoreboardRows.hasNext(); textWidth = Math.max(textWidth, tr.getWidth(text2) + colonSpaceWidth + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())))) {
+        for(Iterator<ScoreboardPlayerScore> scoreboardRows = playerRows.iterator(); scoreboardRows.hasNext(); textWidth = Math.max(textWidth, tr.getWidth(text2) + colonSpaceWidth)) {
             scoreboardPlayerScore = scoreboardRows.next();
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
             text2 = Team.decorateName(team, Text.literal(scoreboardPlayerScore.getPlayerName()));
