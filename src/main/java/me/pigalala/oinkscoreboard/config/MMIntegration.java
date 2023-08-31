@@ -21,7 +21,7 @@ public class MMIntegration implements ModMenuApi {
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardColour = newVal)
                             .setTooltip(SCOREBOARD_COLOUR_TOOLTIP)
                             .build())
-                    .addEntry(entryBuilder.startIntSlider(MAX_ROWS, OinkConfig.maxRows, 0, 200)
+                    .addEntry(entryBuilder.startIntSlider(MAX_ROWS, OinkConfig.maxRows, 0, 125)
                             .setDefaultValue(30)
                             .setSaveConsumer(newVal -> OinkConfig.maxRows = newVal)
                             .setTooltip(MAX_ROWS_TOOLTIP)
@@ -31,7 +31,8 @@ public class MMIntegration implements ModMenuApi {
                             .setSaveConsumer(newVal -> OinkConfig.scoreboardPlacement = newVal)
                             .setEnumNameProvider(val -> Text.of(ScoreboardPlacements.of(val.ordinal()).getDisplayName()))
                             .setTooltip(ScoreboardPlacements.getToolTip())
-                            .build());
+                            .build())
+            ;
 
             b.setSavingRunnable(OinkConfig::save);
             return b.build();

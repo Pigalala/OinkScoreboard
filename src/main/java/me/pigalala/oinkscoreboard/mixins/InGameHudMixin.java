@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import me.pigalala.oinkscoreboard.config.ScoreboardPlacements;
 import me.pigalala.oinkscoreboard.config.OinkConfig;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -15,15 +14,12 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -35,14 +31,16 @@ public abstract class InGameHudMixin {
     @Shadow private int scaledHeight;
     @Shadow public abstract TextRenderer getTextRenderer();
 
-    @Shadow @Final private MinecraftClient client;
-
     @Inject(
             method = "renderScoreboardSidebar",
             at = @At(value = "HEAD"),
             cancellable = true
     )
     private void renderScoreboardSidebar(DrawContext context, ScoreboardObjective objective, CallbackInfo ci) {
+        if(OinkConfig.maxRows == 0) {
+            ci.cancel();
+            return;
+        }
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<ScoreboardPlayerScore> playerRows = scoreboard.getAllPlayerScores(objective).stream().filter((score) -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#")).collect(Collectors.toList());
 

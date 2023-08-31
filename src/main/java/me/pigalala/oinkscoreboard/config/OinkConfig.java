@@ -1,5 +1,6 @@
 package me.pigalala.oinkscoreboard.config;
 
+import me.pigalala.oinkscoreboard.OinkScoreboard;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.BufferedReader;
@@ -34,6 +35,8 @@ public class OinkConfig {
         }
         catch (Exception e) {
         }
+
+        maxRows = Math.min(Math.max(0, maxRows), 125);
     }
 
     public static void save() {
@@ -43,6 +46,8 @@ public class OinkConfig {
             writer.write("scolour " + scoreboardColour + "\n");
             writer.write("placement " + scoreboardPlacement.toString() + "\n");
             writer.close();
+
+            OinkScoreboard.sendRowsPacket();
         }
         catch (Exception e) {
             System.out.println("There was an error saving the OinkScoreboard config");
