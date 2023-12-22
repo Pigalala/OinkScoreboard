@@ -1,6 +1,5 @@
 package me.pigalala.oinkscoreboard.config;
 
-import me.pigalala.oinkscoreboard.OinkScoreboard;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.BufferedReader;
@@ -13,6 +12,7 @@ public class OinkConfig {
     public static int maxRows = 30;
     public static int scoreboardColour = 0x4c000000;
     public static ScoreboardPlacements scoreboardPlacement = ScoreboardPlacements.NORMAL;
+    public static boolean enabled = true;
 
     private static File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "oinkscoreboard.properties");
 
@@ -28,6 +28,8 @@ public class OinkConfig {
                         scoreboardColour = Integer.parseInt(line.substring(8));
                     else if(line.startsWith("placement "))
                         scoreboardPlacement = ScoreboardPlacements.valueOf(line.substring(10));
+                    else if(line.startsWith("enabled "))
+                        enabled = Boolean.parseBoolean(line.substring(8));
                     line = br.readLine();
                 } while (line != null);
                 br.close();
@@ -45,9 +47,8 @@ public class OinkConfig {
             writer.write("maxrows " + maxRows + "\n");
             writer.write("scolour " + scoreboardColour + "\n");
             writer.write("placement " + scoreboardPlacement.toString() + "\n");
+            writer.write("enabled " + enabled + "\n");
             writer.close();
-
-            OinkScoreboard.sendRowsPacket();
         }
         catch (Exception e) {
             System.out.println("There was an error saving the OinkScoreboard config");

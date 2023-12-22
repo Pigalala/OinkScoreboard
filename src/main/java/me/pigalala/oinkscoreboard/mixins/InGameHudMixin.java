@@ -37,7 +37,7 @@ public abstract class InGameHudMixin {
             cancellable = true
     )
     private void renderScoreboardSidebar(DrawContext context, ScoreboardObjective objective, CallbackInfo ci) {
-        if(OinkConfig.maxRows == 0) {
+        if(OinkConfig.maxRows == 0 || !OinkConfig.enabled) {
             ci.cancel();
             return;
         }
