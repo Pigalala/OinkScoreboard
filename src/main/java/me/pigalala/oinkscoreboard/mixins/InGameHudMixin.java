@@ -41,7 +41,7 @@ public abstract class InGameHudMixin {
         int scaledWidth = context.getScaledWindowWidth();
         int scaledHeight = context.getScaledWindowHeight();
 
-        if(OinkConfig.maxRows == 0) {
+        if(OinkConfig.maxRows == 0 || !OinkConfig.enabled) {
             ci.cancel();
             return;
         }
