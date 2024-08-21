@@ -2,8 +2,8 @@ package me.pigalala.oinkscoreboard.mixins;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import net.minecraft.client.MinecraftClient;
 import com.mojang.datafixers.util.Pair;
+import me.pigalala.oinkscoreboard.OinkScoreboard;
 import me.pigalala.oinkscoreboard.config.ScoreboardPlacements;
 import me.pigalala.oinkscoreboard.config.OinkConfig;
 import net.minecraft.client.font.TextRenderer;
@@ -12,7 +12,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardEntry;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -38,17 +37,20 @@ public abstract class InGameHudMixin {
             cancellable = true
     )
     private void renderScoreboardSidebar(DrawContext context, ScoreboardObjective objective, CallbackInfo ci) {
+        OinkConfig config = OinkScoreboard.config;
         int scaledWidth = context.getScaledWindowWidth();
         int scaledHeight = context.getScaledWindowHeight();
 
-        if(OinkConfig.maxRows == 0 || !OinkConfig.enabled) {
+        if(config.maxRows == 0 || !config.enabled) {
             ci.cancel();
             return;
         }
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<ScoreboardEntry> playerRows = scoreboard.getScoreboardEntries(objective).stream().filter((score) -> score.owner() != null && !score.owner().startsWith("#")).sorted(Comparator.comparingInt(ScoreboardEntry::value)).collect(Collectors.toList());;
 
-        if(playerRows.size() > OinkConfig.maxRows) playerRows = Lists.newArrayList(Iterables.skip(playerRows, playerRows.size() - OinkConfig.maxRows));
+        if(playerRows.size() > config.maxRows) {
+            playerRows = Lists.newArrayList(Iterables.skip(playerRows, playerRows.size() - config.maxRows));
+        }
 
         List<Pair<ScoreboardEntry, Text>> rowNamePair = Lists.newArrayListWithCapacity(playerRows.size());
         Text scoreboardTitle = objective.getDisplayName();
@@ -66,16 +68,17 @@ public abstract class InGameHudMixin {
             rowNamePair.add(Pair.of(scoreboardPlayerScore, text2));
         }
 
-        int m;
-        if(OinkConfig.scoreboardPlacement == ScoreboardPlacements.NORMAL) m = scaledHeight / 2 + (playerRows.size() * 9) / 2; // Normal placement
-        else if(OinkConfig.scoreboardPlacement == ScoreboardPlacements.LOWER_RIGHT) m = scaledHeight; // Lower Right placement
-        else m = (playerRows.size() + 1) * 9; // Upper Right placement
+        int m = switch (config.scoreboardPlacement()) {
+            case NORMAL -> scaledHeight / 2 + (playerRows.size() * 9) / 2;
+            case LOWER_RIGHT -> scaledHeight;
+            case UPPER_RIGHT -> (playerRows.size() + 1) * 9;
+        };
 
         int x = scaledWidth - textWidth - 3;
         int xOffset = x - 2;
 
-        int backgroundColorLight = OinkConfig.scoreboardColour;
-        int backgroundColorDark = OinkConfig.scoreboardColour + 0x1A000000;
+        int backgroundColorLight = config.scoreboardColor;
+        int backgroundColorDark = config.scoreboardColor + 0x1A000000;
 
         int inc = 0;
         for (Pair<ScoreboardEntry, Text> pair : rowNamePair) {

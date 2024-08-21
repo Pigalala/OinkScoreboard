@@ -1,57 +1,115 @@
 package me.pigalala.oinkscoreboard.config;
 
+import com.google.gson.*;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class OinkConfig {
+public final class OinkConfig {
 
-    public static int maxRows = 30;
-    public static int scoreboardColour = 0x4c000000;
-    public static ScoreboardPlacements scoreboardPlacement = ScoreboardPlacements.NORMAL;
-    public static boolean enabled = true;
+    private final Path configFilePath = FabricLoader.getInstance().getConfigDir().resolve("oinkscoreboard.json");
 
-    private static File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "oinkscoreboard.properties");
+    @SaveMePlease("max_rows")
+    public int maxRows = 15;
 
-    public static void load() {
-        try {
-            if(configFile.exists()) {
-                BufferedReader br = new BufferedReader(new FileReader(configFile));
-                String line = br.readLine();
-                do {
-                    if(line.startsWith("maxrows "))
-                        maxRows = Integer.parseInt(line.substring(8));
-                    else if(line.startsWith("scolour "))
-                        scoreboardColour = Integer.parseInt(line.substring(8));
-                    else if(line.startsWith("placement "))
-                        scoreboardPlacement = ScoreboardPlacements.valueOf(line.substring(10));
-                    else if(line.startsWith("enabled "))
-                        enabled = Boolean.parseBoolean(line.substring(8));
-                    line = br.readLine();
-                } while (line != null);
-                br.close();
+    @SaveMePlease("scoreboard_color")
+    public int scoreboardColor = 0x4c000000;
+
+    @SaveMePlease("scoreboard_placement")
+    public int scoreboardPlacementOrdinal = ScoreboardPlacements.NORMAL.ordinal();
+
+    @SaveMePlease("enabled")
+    public boolean enabled = true;
+
+    public OinkConfig() {
+        // Create file with default values if it doesn't exist
+        if (!Files.exists(configFilePath)) {
+            save();
+        }
+
+        // Read json file
+        JsonObject configJson;
+        try (BufferedReader reader = Files.newBufferedReader(configFilePath)) {
+            configJson = (JsonObject) JsonParser.parseReader(reader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (Field field : getClass().getFields()) {
+            if (!field.isAnnotationPresent(SaveMePlease.class)) {
+                continue;
+            }
+
+            String saveAsName = field.getAnnotation(SaveMePlease.class).value();
+            try {
+                // Set values somehow
+                Field valueField = JsonPrimitive.class.getDeclaredField("value"); // Pray
+                valueField.setAccessible(true);
+                Object value;
+
+                if (configJson.get(saveAsName) instanceof JsonPrimitive primitive) {
+                    value = valueField.get(primitive);
+                    if (value instanceof Number n) {
+                        value = n.intValue();
+                    }
+                } else {
+                    value = null;
+                }
+
+                field.set(this, value);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
             }
         }
-        catch (Exception e) {
-        }
-
-        maxRows = Math.min(Math.max(0, maxRows), 125);
     }
 
-    public static void save() {
+    public void save() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject result = new JsonObject();
+
+        for (Field field : getClass().getDeclaredFields()) {
+            if (!field.isAnnotationPresent(SaveMePlease.class)) {
+                continue;
+            }
+
+            String saveAsName = field.getAnnotation(SaveMePlease.class).value();
+            Object value;
+            try {
+                value = field.get(this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                result.add(saveAsName, JsonNull.INSTANCE);
+                return;
+            }
+
+            switch (value) {
+                case String s -> result.addProperty(saveAsName, s);
+                case Number n -> result.addProperty(saveAsName, n);
+                case Boolean b -> result.addProperty(saveAsName, b);
+                case Character c -> result.addProperty(saveAsName, c);
+                default -> result.add(saveAsName, JsonNull.INSTANCE);
+            }
+        }
+
         try {
-            FileWriter writer = new FileWriter(configFile);
-            writer.write("maxrows " + maxRows + "\n");
-            writer.write("scolour " + scoreboardColour + "\n");
-            writer.write("placement " + scoreboardPlacement.toString() + "\n");
-            writer.write("enabled " + enabled + "\n");
-            writer.close();
+            if (!Files.exists(configFilePath)) {
+                Files.createFile(configFilePath);
+            }
+            Files.write(configFilePath, gson.toJson(result).getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save OinkScoreboard config", e);
         }
-        catch (Exception e) {
-            System.out.println("There was an error saving the OinkScoreboard config");
-        }
+    }
+
+    public ScoreboardPlacements scoreboardPlacement() {
+        return ScoreboardPlacements.values()[scoreboardPlacementOrdinal];
+    }
+
+    public void scoreboardPlacement(ScoreboardPlacements scoreboardPlacements) {
+        scoreboardPlacementOrdinal = scoreboardPlacements.ordinal();
     }
 }
