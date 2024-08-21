@@ -47,7 +47,7 @@ public class OinkConfig {
             writer.write("placement " + scoreboardPlacement.toString() + "\n");
             writer.close();
 
-            OinkScoreboard.sendRowsPacket();
+            // OinkScoreboard.sendRowsPacket();
         }
         catch (Exception e) {
             System.out.println("There was an error saving the OinkScoreboard config");
